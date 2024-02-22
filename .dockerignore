@@ -1,0 +1,9 @@
+.vs
+out
+**/Generated/*
+**/*.user
+Dockerfile
+*.yml
+.git
+**/Documents/*
+**/cmake-build**
