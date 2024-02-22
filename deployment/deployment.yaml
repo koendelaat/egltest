@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: egl-test
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: egltest
+      app.kubernetes.io/name: egltest
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: egltest
+        app.kubernetes.io/name: egltest
+    spec:
+      containers:
+        - name: egltest
+          image: koendelaat/egltest:v1.2
+          resources:
+            limits:
+              nvidia.com/gpu: '1'
+      runtimeClassName: nvidia
