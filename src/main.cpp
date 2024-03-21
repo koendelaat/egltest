@@ -43,7 +43,7 @@ int main(int /*argc*/, const char *const argv[]) {
             else
             {
                 while (true) {
-                    std::cout << "No GPU HW acceleration" << std::endl;
+                    std::cout << "WARNING: No GPU HW acceleration" << std::endl;
                     sleep(5);
                 }
             }
