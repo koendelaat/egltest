@@ -1,4 +1,5 @@
-FROM nvidia/opengl:base-ubuntu22.04 AS builder
+# FROM nvidia/opengl:base-ubuntu22.04 AS builder
+FROM pbronneberg/cudagl:12.3.2-devel-ubuntu22.04 AS builder
 
 ENV TZ=Europe/Amsterdam
 
@@ -23,8 +24,8 @@ RUN cd /usr/src && \
     cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -S . -B ./out && \
     cmake --build ./out -j `getconf _NPROCESSORS_ONLN`
 
-FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu22.04 AS runtime
-
+# FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu22.04 AS runtime
+FROM pbronneberg/cudagl:12.3.2-runtime-ubuntu22.04 AS runtime
 ENV TZ=Europe/Amsterdam
 
 ARG DEBIAN_FRONTEND=noninteractive

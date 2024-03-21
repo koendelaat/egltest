@@ -1,0 +1,90 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - .github/workflows/CI-CD.yml
+      - src/**
+      - Dockerfile
+  pull_request:
+    paths:
+      - .github/workflows/CI-CD.yml
+      - src/**
+      - Dockerfile
+  workflow_dispatch:
+
+jobs:
+  ###################################################       build      ###################################################
+  build:
+    runs-on: [ ubuntu-latest ]
+    name: Build and Test
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    permissions:
+      contents: write
+      statuses: write
+      checks: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+ 
+      - name: Determine git version
+        uses: PaulHatch/semantic-version@v5.3.0
+        id: version
+        with:
+          tag_prefix: "v"
+          change_path: "src Dockerfile"
+          version_format: "${major}.${minor}.${patch}"
+
+      - name: Setup Docker
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_APIKEY: ${{ secrets.DOCKERHUB_APIKEY }}
+        run: |
+          docker buildx create --use
+          docker login --username ${DOCKERHUB_USERNAME} --password ${DOCKERHUB_APIKEY}
+
+      - name: Build Docker Runtime image
+        id: docker_build_runtime
+        env:
+          IMAGE_TAG: ${{ steps.version.outputs.version }}
+        run: |          
+          docker buildx build --push -t koendelaat/egltest:v${IMAGE_TAG} \
+          --platform linux/amd64 \
+          --attest type=sbom --attest type=provenance,mode=max \
+          --progress=plain .
+    
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          generate_release_notes: true
+          tag_name: ${{ steps.version.outputs.version_tag }}
+          name: "Version ${{ steps.version.outputs.version }}"
+          prerelease: false
+          target_commitish: ${{ github.ref }}
+
+ ###################################################     security      ###################################################
+  vulnerability-test:
+    name: Vulnerability Test
+    needs: build
+    runs-on: [ ubuntu-latest ]
+    permissions:
+      contents: read
+      statuses: write
+      checks: write
+
+    steps:
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: koendelaat/egltest:v${{ needs.build.outputs.version }}
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+  
+  
