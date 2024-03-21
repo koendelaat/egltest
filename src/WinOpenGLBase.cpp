@@ -57,6 +57,7 @@ namespace EglTest {
         eglQueryDevicesEXT(MAX_DEVICES, devices, &numDevices);
 
         if (numDevices > 0) {
+            std::cout << "Number of discovered devices: " << numDevices << std::endl;
             m_hDisplay = eglGetPlatformDisplayEXT(EGL_PLATFORM_DEVICE_EXT, devices[0], nullptr);
         } else {
             std::cout << "eglQueryDevicesExt returns 0 devices" << std::endl;
