@@ -68,15 +68,6 @@ namespace EglTest {
             std::cout << "eglGetError: " << std::to_string(error) << std::endl;
             throw std::runtime_error("eglGetPlatformDisplayEXT returns null");
         }
-        auto extentions = eglQueryString(m_hDisplay, EGL_EXTENSIONS);
-        if (extentions == nullptr) {
-            auto error = eglGetError();
-            std::cout << "eglQueryString returns null" << std::endl;
-            std::cout << "eglGetError: " << std::to_string(error) << std::endl;
-        }
-        else {
-            std::cout << "eglQueryString: " << extentions << std::endl;
-        }
 
         static const EGLint configAttribs[] = {
                 EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,

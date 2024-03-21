@@ -1,5 +1,7 @@
 #include <iostream>
+#include <string_view>
 #include "WinOpenGLBase.h"
+#include <unistd.h>
 
 int main(int /*argc*/, const char *const argv[]) {
     try {
@@ -16,6 +18,9 @@ int main(int /*argc*/, const char *const argv[]) {
             std::cout << "OpenGL: vendor: " << vendor << ", renderer: " << renderer << ", version: " << version
                       << ", shading language version: " << glslversion << std::endl;
 
+            std::string_view vendorStrView(reinterpret_cast<const char*>(vendor));
+            const bool isNvidia = vendorStrView.starts_with("NVIDIA");
+
             int availableVideoMemory;
             const bool successGetVideoMemory = EglTest::WinOpenGLBase::GetAvailableVideoMemory(availableVideoMemory);
             if (!successGetVideoMemory)
@@ -29,11 +34,17 @@ int main(int /*argc*/, const char *const argv[]) {
                         << "Some required OpenGL extensions are not supported; hardware incapable of backprojection on the GPU!"
                         << std::endl;
 
-            if (successGetVideoMemory && openglExtensionsSupported) {
-                std::cout << "Hardware allows GPU backprojection" << std::endl;
+            if (successGetVideoMemory && openglExtensionsSupported && isNvidia) {
+                while (true){
+                    std::cout << "Hardware allows GPU backprojection" << std::endl;
+                    sleep(5);
+                }
+            }
+            else
+            {
+                return 1;
             }
         }
-
         return 0;
     }
     catch (const std::exception &e) {
