@@ -8,7 +8,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # enable position independent code (for including static libs in dynamic lib)
-set(CMAKE_CXX_STANDARD 17) # set c++ standard to c++17 for all projects
+set(CMAKE_CXX_STANDARD 20) # set c++ standard to c++20 for all projects
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}) # make sure executables of subdirectories are copied to bin directory
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}) # make sure that shared libraries are copied to bin directory
 # the following properties change the RPATH (linux) of libraries and executables, i.e. the path in which
