@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: egltest
-          image: koendelaat/egltest:v1.2
+          image: koendelaat/egltest:v1.2.3
           resources:
             limits:
               nvidia.com/gpu: '1'
